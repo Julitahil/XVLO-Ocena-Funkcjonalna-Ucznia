@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karta oceny funkcjonalnej ucznia (ICF) — XV LO</title>
+<style>
+  :root {
+    --ink: #1c2230;
+    --ink-soft: #4a5468;
+    --paper: #f4f1ea;
+    --card: #ffffff;
+    --line: #d8d3c6;
+    --accent: #2f5d50;
+    --accent-soft: #e4ede9;
+    --gold: #b07d2b;
+    --c-func: #534ab7;
+    --c-func-bg: #eeedfe;
+    --c-act: #0f6e56;
+    --c-act-bg: #e1f5ee;
+    --c-env: #854f0b;
+    --c-env-bg: #faeeda;
+    --c-pers: #993c1d;
+    --c-pers-bg: #faece7;
+    --shadow: 0 1px 3px rgba(28,34,48,.06), 0 8px 24px rgba(28,34,48,.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  header.masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  h1 {
+    font-size: 29px;
+    line-height: 1.2;
+    margin: 6px 0 4px;
+    font-weight: 600;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 24px 26px;
+    margin-bottom: 22px;
+  }
+  .card > h2 {
+    font-size: 13px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .card-lead {
+    font-size: 14px;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* kolorowe nagłówki komponentów ICF */
+  .comp-func > h2 { color: var(--c-func); }
+  .comp-act  > h2 { color: var(--c-act); }
+  .comp-env  > h2 { color: var(--c-env); }
+  .comp-pers > h2 { color: var(--c-pers); }
+  .comp-func { border-top: 4px solid var(--c-func); }
+  .comp-act  { border-top: 4px solid var(--c-act); }
+  .comp-env  { border-top: 4px solid var(--c-env); }
+  .comp-pers { border-top: 4px solid var(--c-pers); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+  }
+  .field { display: flex; flex-direction: column; }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  input, textarea, select {
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: #fcfbf8;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 11px;
+    width: 100%;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  textarea { resize: vertical; min-height: 56px; }
+
+  /* domena ICF */
+  .domain {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 15px 17px;
+    margin-bottom: 13px;
+    background: #fcfbf8;
+  }
+  .domain-head {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+  }
+  .domain-code {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    letter-spacing: .03em;
+  }
+  .code-func { background: var(--c-func); }
+  .code-act  { background: var(--c-act); }
+  .code-env  { background: var(--c-env); }
+  .domain-title { font-size: 16.5px; font-weight: 600; }
+  .domain-hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-bottom: 11px;
+  }
+
+  /* dwuwymiarowa ocena: zdolność + faktyczne wykonanie */
+  .rate-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .rate-block .rate-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin-bottom: 5px;
+    display: block;
+  }
+  .rate-label .rl-hint { font-weight: 400; text-transform: none; letter-spacing: 0; font-style: italic; }
+  .scale {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .scale label {
+    flex: 1;
+    min-width: 76px;
+    margin: 0;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .scale input { display: none; }
+  .scale .opt {
+    display: block;
+    text-align: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11.5px;
+    line-height: 1.3;
+    padding: 7px 4px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink-soft);
+    transition: all .15s;
+  }
+  .scale label:hover .opt { border-color: var(--accent); }
+  .scale input:checked + .opt {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* skala dla czynników środowiskowych: bariera <-> ułatwienie */
+  .scale.env input:checked + .opt { background: var(--c-env); border-color: var(--c-env); }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  button {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 12px 22px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid var(--accent);
+    transition: transform .1s, background .15s;
+  }
+  button:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #264a40; }
+  .btn-ghost { background: transparent; color: var(--accent); }
+  .btn-ghost:hover { background: var(--accent-soft); }
+
+  .note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin-top: 16px;
+  }
+  .note strong { color: var(--ink); }
+
+  /* --- Raport --- */
+  #report { display: none; }
+  .report-block { margin-bottom: 12px; }
+  .report-block .rlabel {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .report-block .rval { font-size: 16px; }
+  .report-domain {
+    border-bottom: 1px solid var(--line);
+    padding: 11px 0;
+  }
+  .report-domain:last-child { border-bottom: none; }
+  .rd-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .rd-title { font-size: 15.5px; font-weight: 600; }
+  .rd-codes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rd-level {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  .rd-level .lv-tag { font-weight: 400; opacity: .8; }
+  .lvl-na { background: #eceae3; color: #6b6b6b; }
+  .lvl-0  { background: #e1ede4; color: #2f5d50; }
+  .lvl-1  { background: #dde9ec; color: #1f5066; }
+  .lvl-2  { background: #f6ecd6; color: #8a6516; }
+  .lvl-3  { background: #fbe6e0; color: #9c4426; }
+  .lvl-4  { background: #f5d6d0; color: #8a2f1c; }
+  .lvl-fac { background: #e1f5ee; color: #0f6e56; }
+  .lvl-bar { background: #faeeda; color: #854f0b; }
+  .rd-comment { font-size: 14px; font-style: italic; color: var(--ink-soft); margin-top: 5px; }
+  .report-section-tag {
+    display: inline-block;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .tag-func { background: var(--c-func-bg); color: var(--c-func); }
+  .tag-act  { background: var(--c-act-bg); color: var(--c-act); }
+  .tag-env  { background: var(--c-env-bg); color: var(--c-env); }
+  .tag-pers { background: var(--c-pers-bg); color: var(--c-pers); }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    h1 { font-size: 23px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; padding: 16px; margin-bottom: 14px; page-break-inside: avoid; }
+    .wrap { padding: 0; }
+    .report-domain { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="kicker">XV Liceum Ogólnokształcące</div>
+    <h1>Karta oceny funkcjonalnej ucznia</h1>
+    <p class="subtitle">Narzędzie obserwacyjne dla nauczycieli oparte na modelu ICF — przygotowanie materiału przed konsultacją z pedagogiem i ewentualnym skierowaniem do poradni</p>
+  </header>
+
+  <!-- ========== FORMULARZ ========== -->
+  <div id="form">
+
+    <div class="card no-print">
+      <div class="note" style="margin-top:0">
+        <strong>Jak korzystać.</strong> Karta opisuje <em>funkcjonowanie</em> ucznia, a nie jego diagnozę.
+        Oceniaj wyłącznie zachowania, które sam obserwujesz. W częściach „Aktywność i uczestnictwo" rozróżniamy
+        <strong>zdolność</strong> (co uczeń potrafi w sprzyjających warunkach) i <strong>wykonanie</strong>
+        (jak faktycznie radzi sobie na co dzień) — to rozróżnienie z modelu ICF. Po wypełnieniu kliknij
+        „Generuj raport", a następnie zapisz plik i prześlij pedagogowi. Dane pozostają wyłącznie na Twoim
+        komputerze i nigdzie nie są wysyłane.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="color:var(--accent)">Dane podstawowe</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="student">Uczeń (imię i nazwisko)</label>
+          <input type="text" id="student" placeholder="np. Jan Kowalski">
+        </div>
+        <div class="field">
+          <label for="class">Klasa</label>
+          <input type="text" id="class" placeholder="np. 2C">
+        </div>
+        <div class="field">
+          <label for="teacher">Nauczyciel wypełniający</label>
+          <input type="text" id="teacher" placeholder="imię i nazwisko">
+        </div>
+        <div class="field">
+          <label for="subject">Przedmiot / rola</label>
+          <input type="text" id="subject" placeholder="np. matematyka / wychowawca">
+        </div>
+        <div class="field">
+          <label for="period">Okres obserwacji</label>
+          <input type="text" id="period" placeholder="np. wrzesień–listopad 2025">
+        </div>
+        <div class="field">
+          <label for="date">Data wypełnienia</label>
+          <input type="date" id="date">
+        </div>
+        <div class="field full">
+          <label for="reason">Powód podjęcia obserwacji</label>
+          <textarea id="reason" placeholder="krótko: co zwróciło uwagę i skłoniło do wypełnienia karty"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card comp-func">
+      <h2>Komponent ICF — funkcje organizmu</h2>
+      <p class="card-lead">Funkcje psychiczne istotne dla uczenia się. Oceniana skala trudności w obserwowanym zachowaniu.</p>
+      <div id="domains-func"></div>
+    </div>
+
+    <div class="card comp-act">
+      <h2>Komponent ICF — aktywność i uczestnictwo</h2>
+      <p class="card-lead">Realizacja zadań i udział w życiu szkoły. Dla każdej domeny: zdolność (warunki sprzyjające) oraz wykonanie (codzienność).</p>
+      <div id="domains-act"></div>
+    </div>
+
+    <div class="card comp-env">
+      <h2>Komponent ICF — czynniki środowiskowe</h2>
+      <p class="card-lead">Elementy otoczenia ucznia. Każdy może być barierą lub ułatwieniem — to często decyduje o tym, czy trudność staje się problemem.</p>
+      <div id="domains-env"></div>
+    </div>
+
+    <div class="card comp-pers">
+      <h2>Czynniki osobiste i podsumowanie</h2>
+      <p class="card-lead">Indywidualne zasoby ucznia oraz synteza obserwacji dla pedagoga.</p>
+      <div class="grid">
+        <div class="field full">
+          <label for="strengths">Mocne strony, zainteresowania, zasoby ucznia</label>
+          <textarea id="strengths" placeholder="np. wytrwałość w tematach, które go interesują; dobra relacja z wybranymi osobami; sprawność w pracy projektowej"></textarea>
+        </div>
+        <div class="field full">
+          <label for="context">Okoliczności znane szkole, mogące mieć znaczenie</label>
+          <textarea id="context" placeholder="np. zmiana szkoły, sytuacja zdrowotna lub rodzinna znana wcześniej"></textarea>
+        </div>
+        <div class="field full">
+          <label for="actions">Dotychczasowe działania wspierające i ich efekt</label>
+          <textarea id="actions" placeholder="np. rozmowy indywidualne, kontakt z rodzicem, dostosowanie tempa lub formy pracy — co przyniosło skutek"></textarea>
+        </div>
+        <div class="field full">
+          <label for="concern">Główne pytanie lub niepokój kierowany do pedagoga</label>
+          <textarea id="concern" placeholder="merytorycznie i konkretnie: czego dotyczy potrzeba konsultacji"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions no-print">
+      <button class="btn-primary" onclick="generateReport()">Generuj raport</button>
+      <button class="btn-ghost" onclick="resetForm()">Wyczyść formularz</button>
+    </div>
+
+  </div>
+
+  <!-- ========== RAPORT ========== -->
+  <div id="report">
+    <div class="card">
+      <h2 style="color:var(--accent)">Profil funkcjonalny ucznia — raport</h2>
+      <p class="card-lead">Opis funkcjonowania w modelu ICF. Materiał obserwacyjny, nie stanowi diagnozy.</p>
+      <div id="reportMeta"></div>
+    </div>
+    <div class="card">
+      <h2 style="color:var(--accent)">Wynik obserwacji według domen ICF</h2>
+      <div id="reportDomains"></div>
+    </div>
+    <div class="card" id="reportNotesCard">
+      <h2 style="color:var(--accent)">Czynniki osobiste i podsumowanie</h2>
+      <div id="reportNotes"></div>
+    </div>
+    <div class="actions no-print">
+      <button class="btn-primary" onclick="window.print()">Drukuj / zapisz jako PDF</button>
+      <button class="btn-primary" onclick="downloadReport()">Zapisz plik do wysłania</button>
+      <button class="btn-ghost" onclick="backToForm()">Wróć do edycji</button>
+    </div>
+    <div class="note no-print">
+      Plik zapisuje się w formacie HTML — pedagog otwiera go w dowolnej przeglądarce, może wydrukować
+      lub zapisać jako PDF. Gdy kilku nauczycieli wypełni karty dla tego samego ucznia, pedagog zestawia
+      je w spójny profil funkcjonalny.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ---- Domeny ICF ---- */
+  // Komponent: funkcje organizmu — ocena jednowymiarowa (trudność)
+  const FUNC = [
+    { id: 'b140', code: 'b140', title: 'Uwaga i koncentracja',
+      hint: 'Utrzymanie uwagi na zadaniu, podzielność uwagi, podatność na rozproszenie.' },
+    { id: 'b152', code: 'b152', title: 'Funkcje emocjonalne',
+      hint: 'Adekwatność i regulacja emocji, radzenie sobie ze stresem i niepowodzeniem.' },
+    { id: 'b130', code: 'b130', title: 'Energia, napęd i motywacja',
+      hint: 'Poziom energii, inicjatywa, wytrwałość w działaniu, zaangażowanie.' },
+    { id: 'b164', code: 'b164', title: 'Funkcje poznawcze wyższe',
+      hint: 'Planowanie, organizacja działań, elastyczność myślenia, rozwiązywanie problemów.' }
+  ];
+  // Komponent: aktywność i uczestnictwo — ocena dwuwymiarowa (zdolność + wykonanie)
+  const ACT = [
+    { id: 'd160', code: 'd160 / d166', title: 'Uczenie się i stosowanie wiedzy',
+      hint: 'Skupianie się na nauce, czytanie ze zrozumieniem, przyswajanie i wykorzystanie wiedzy.' },
+    { id: 'd210', code: 'd210 / d220', title: 'Wykonywanie zadań i organizacja',
+      hint: 'Realizacja zadań pojedynczych i złożonych, dotrzymywanie terminów, organizacja pracy własnej.' },
+    { id: 'd310', code: 'd310 / d350', title: 'Komunikacja',
+      hint: 'Rozumienie poleceń, wypowiadanie się, prowadzenie rozmowy, komunikacja w grupie.' },
+    { id: 'd710', code: 'd710 / d720', title: 'Relacje interpersonalne',
+      hint: 'Nawiązywanie i utrzymywanie relacji z rówieśnikami i dorosłymi, współpraca.' },
+    { id: 'd820', code: 'd820 / d880', title: 'Uczestnictwo w życiu klasy i szkoły',
+      hint: 'Obecność i zaangażowanie w lekcje, udział w zadaniach zespołowych i życiu klasy.' },
+    { id: 'd230', code: 'd230 / d250', title: 'Radzenie sobie z wymaganiami i rutyną',
+      hint: 'Funkcjonowanie w codziennym rytmie szkoły, reakcja na zmiany, panowanie nad zachowaniem.' }
+  ];
+  // Komponent: czynniki środowiskowe — skala bariera <-> ułatwienie
+  const ENV = [
+    { id: 'e310', code: 'e310 / e410', title: 'Wsparcie i postawy rodziny',
+      hint: 'Zaangażowanie i postawa najbliższego otoczenia wobec nauki ucznia.' },
+    { id: 'e320', code: 'e320 / e420', title: 'Wsparcie i postawy rówieśników',
+      hint: 'Relacje w klasie, akceptacja, postawa kolegów wobec ucznia.' },
+    { id: 'e330', code: 'e330 / e430', title: 'Wsparcie i postawy nauczycieli',
+      hint: 'Dostępne wsparcie ze strony szkoły, postawa kadry, relacja nauczyciel–uczeń.' },
+    { id: 'e130', code: 'e130 / e135', title: 'Dostosowania i pomoce w nauce',
+      hint: 'Dostępność dostosowań, materiałów, organizacji pracy odpowiadających potrzebom ucznia.' }
+  ];
+
+  // Skala dla funkcji i wykonania/zdolności (0–4, ICF)
+  const SCALE_DIFF = [
+    { v: '0', label: 'Brak<br>trudności' },
+    { v: '1', label: 'Niewielkie<br>trudności' },
+    { v: '2', label: 'Umiarkowane<br>trudności' },
+    { v: '3', label: 'Znaczne<br>trudności' },
+    { v: '4', label: 'Pełne<br>trudności' },
+    { v: 'na', label: 'Brak<br>obserwacji' }
+  ];
+  const DIFF_TEXT = {
+    '0': 'Brak trudności', '1': 'Niewielkie trudności', '2': 'Umiarkowane trudności',
+    '3': 'Znaczne trudności', '4': 'Pełne trudności', 'na': 'Brak obserwacji'
+  };
+  // Skala dla czynników środowiskowych
+  const SCALE_ENV = [
+    { v: 'f2', label: 'Wyraźne<br>ułatwienie' },
+    { v: 'f1', label: 'Umiarkowane<br>ułatwienie' },
+    { v: 'n',  label: 'Neutralne' },
+    { v: 'b1', label: 'Umiarkowana<br>bariera' },
+    { v: 'b2', label: 'Wyraźna<br>bariera' },
+    { v: 'na', label: 'Brak<br>obserwacji' }
+  ];
+  const ENV_TEXT = {
+    'f2': 'Wyraźne ułatwienie', 'f1': 'Umiarkowane ułatwienie', 'n': 'Czynnik neutralny',
+    'b1': 'Umiarkowana bariera', 'b2': 'Wyraźna bariera', 'na': 'Brak obserwacji'
+  };
+
+  function esc(s) {
+    return (s || '').replace(/[&<>"]/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+  function val(id) { return (document.getElementById(id).value || '').trim(); }
+  function radioVal(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : null;
+  }
+
+  function scaleHTML(name, scale, extraClass) {
+    return `<div class="scale ${extraClass || ''}">` + scale.map(s =>
+      `<label><input type="radio" name="${name}" value="${s.v}"><span class="opt">${s.label}</span></label>`
+    ).join('') + '</div>';
+  }
+
+  function buildFunc() {
+    const c = document.getElementById('domains-func');
+    FUNC.forEach(d => {
+      c.insertAdjacentHTML('beforeend', `
+        <div class="domain">
+          <div class="domain-head">
+            <span class="domain-code code-func">${d.code}</span>
+            <span class="domain-title">${d.title}</span>
+          </div>
+          <div class="domain-hint">${d.hint}</div>
+          <div class="rate-block">
+            <span class="rate-label">Stopień trudności <span class="rl-hint">— jak często i jak silnie utrudnia funkcjonowanie</span></span>
+            ${scaleHTML(d.id, SCALE_DIFF)}
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label for="${d.id}_c">Konkretny przykład zachowania (opcjonalnie)</label>
+            <textarea id="${d.id}_c" placeholder="krótki, obserwowalny opis sytuacji"></textarea>
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  function buildAct() {
+    const c = document.getElementById('domains-act');
+    ACT.forEach(d => {
+      c.insertAdjacentHTML('beforeend', `
+        <div class="domain">
+          <div class="domain-head">
+            <span class="domain-code code-act">${d.code}</span>
+            <span class="domain-title">${d.title}</span>
+          </div>
+          <div class="domain-hint">${d.hint}</div>
+          <div class="rate-row">
+            <div class="rate-block">
+              <span class="rate-label">Zdolność <span class="rl-hint">— co uczeń potrafi w sprzyjających warunkach</span></span>
+              ${scaleHTML(d.id + '_cap', SCALE_DIFF)}
+            </div>
+            <div class="rate-block">
+              <span class="rate-label">Wykonanie <span class="rl-hint">— jak faktycznie radzi sobie na co dzień</span></span>
+              ${scaleHTML(d.id + '_perf', SCALE_DIFF)}
+            </div>
+          </div>
+          <div class="field">
+            <label for="${d.id}_c">Konkretny przykład zachowania (opcjonalnie)</label>
+            <textarea id="${d.id}_c" placeholder="krótki, obserwowalny opis sytuacji"></textarea>
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  function buildEnv() {
+    const c = document.getElementById('domains-env');
+    ENV.forEach(d => {
+      c.insertAdjacentHTML('beforeend', `
+        <div class="domain">
+          <div class="domain-head">
+            <span class="domain-code code-env">${d.code}</span>
+            <span class="domain-title">${d.title}</span>
+          </div>
+          <div class="domain-hint">${d.hint}</div>
+          <div class="rate-block">
+            <span class="rate-label">Wpływ na funkcjonowanie ucznia</span>
+            ${scaleHTML(d.id, SCALE_ENV, 'env')}
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label for="${d.id}_c">Uzasadnienie / przykład (opcjonalnie)</label>
+            <textarea id="${d.id}_c" placeholder="co konkretnie pomaga lub przeszkadza"></textarea>
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  /* ---- Raport ---- */
+  function diffPill(v) {
+    if (v === null) return `<span class="rd-level lvl-na">Nie oceniono</span>`;
+    return `<span class="rd-level lvl-${v}">${DIFF_TEXT[v]}</span>`;
+  }
+  function envPill(v) {
+    if (v === null) return `<span class="rd-level lvl-na">Nie oceniono</span>`;
+    if (v === 'na') return `<span class="rd-level lvl-na">${ENV_TEXT[v]}</span>`;
+    const cls = (v === 'f1' || v === 'f2') ? 'lvl-fac' : (v === 'n' ? 'lvl-0' : 'lvl-bar');
+    return `<span class="rd-level ${cls}">${ENV_TEXT[v]}</span>`;
+  }
+
+  function renderFuncDomain(d) {
+    const v = radioVal(d.id);
+    const comment = val(d.id + '_c');
+    return `<div class="report-domain">
+      <div class="rd-head">
+        <span class="rd-title">${d.code} · ${d.title}</span>
+        <span class="rd-codes">${diffPill(v)}</span>
+      </div>
+      ${comment ? `<div class="rd-comment">„${esc(comment)}"</div>` : ''}
+    </div>`;
+  }
+  function renderActDomain(d) {
+    const cap = radioVal(d.id + '_cap');
+    const perf = radioVal(d.id + '_perf');
+    const comment = val(d.id + '_c');
+    return `<div class="report-domain">
+      <div class="rd-head">
+        <span class="rd-title">${d.code} · ${d.title}</span>
+        <span class="rd-codes">
+          <span class="rd-level ${cap===null?'lvl-na':'lvl-'+cap}"><span class="lv-tag">zdolność:</span> ${cap===null?'—':DIFF_TEXT[cap]}</span>
+          <span class="rd-level ${perf===null?'lvl-na':'lvl-'+perf}"><span class="lv-tag">wykonanie:</span> ${perf===null?'—':DIFF_TEXT[perf]}</span>
+        </span>
+      </div>
+      ${comment ? `<div class="rd-comment">„${esc(comment)}"</div>` : ''}
+    </div>`;
+  }
+  function renderEnvDomain(d) {
+    const v = radioVal(d.id);
+    const comment = val(d.id + '_c');
+    return `<div class="report-domain">
+      <div class="rd-head">
+        <span class="rd-title">${d.code} · ${d.title}</span>
+        <span class="rd-codes">${envPill(v)}</span>
+      </div>
+      ${comment ? `<div class="rd-comment">„${esc(comment)}"</div>` : ''}
+    </div>`;
+  }
+
+  function generateReport() {
+    const meta = [
+      ['Uczeń', val('student')], ['Klasa', val('class')],
+      ['Nauczyciel wypełniający', val('teacher')], ['Przedmiot / rola', val('subject')],
+      ['Okres obserwacji', val('period')], ['Data wypełnienia', val('date')]
+    ];
+    let metaHTML = '<div class="grid">' + meta.map(([l, v]) =>
+      `<div class="report-block"><div class="rlabel">${l}</div><div class="rval">${esc(v) || '—'}</div></div>`
+    ).join('') + '</div>';
+    if (val('reason')) {
+      metaHTML += `<div class="report-block" style="margin-top:12px">
+        <div class="rlabel">Powód podjęcia obserwacji</div>
+        <div class="rval">${esc(val('reason'))}</div></div>`;
+    }
+    document.getElementById('reportMeta').innerHTML = metaHTML;
+
+    let dom = '';
+    dom += `<div class="report-section-tag tag-func">Funkcje organizmu</div>`;
+    dom += FUNC.map(renderFuncDomain).join('');
+    dom += `<div class="report-section-tag tag-act" style="margin-top:18px">Aktywność i uczestnictwo</div>`;
+    dom += ACT.map(renderActDomain).join('');
+    dom += `<div class="report-section-tag tag-env" style="margin-top:18px">Czynniki środowiskowe</div>`;
+    dom += ENV.map(renderEnvDomain).join('');
+    document.getElementById('reportDomains').innerHTML = dom;
+
+    const notes = [
+      ['tag-pers', 'Mocne strony, zainteresowania, zasoby ucznia', val('strengths')],
+      ['tag-pers', 'Okoliczności znane szkole', val('context')],
+      ['tag-pers', 'Dotychczasowe działania wspierające i ich efekt', val('actions')],
+      ['tag-pers', 'Główne pytanie / niepokój kierowany do pedagoga', val('concern')]
+    ].filter(([, , v]) => v);
+    document.getElementById('reportNotesCard').style.display = notes.length ? 'block' : 'none';
+    document.getElementById('reportNotes').innerHTML = notes.map(([, l, v]) =>
+      `<div class="report-block"><div class="rlabel">${l}</div><div class="rval">${esc(v)}</div></div>`
+    ).join('');
+
+    document.getElementById('form').style.display = 'none';
+    document.getElementById('report').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function backToForm() {
+    document.getElementById('report').style.display = 'none';
+    document.getElementById('form').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+  function resetForm() {
+    if (!confirm('Wyczyścić wszystkie pola formularza?')) return;
+    document.querySelectorAll('input, textarea').forEach(el => {
+      if (el.type === 'radio') el.checked = false;
+      else el.value = '';
+    });
+  }
+  function downloadReport() {
+    const student = val('student') || 'uczen';
+    const safe = student.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ ]/g, '').replace(/\s+/g, '_');
+    const styles = document.querySelector('style').outerHTML;
+    const reportClone = document.getElementById('report').cloneNode(true);
+    reportClone.querySelectorAll('.no-print').forEach(el => el.remove());
+    const masthead = document.querySelector('.masthead').outerHTML;
+    const doc = `<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8">
+<title>Karta oceny funkcjonalnej (ICF) — ${esc(student)}</title>${styles}</head>
+<body><div class="wrap">${masthead}${reportClone.innerHTML}</div></body></html>`;
+    const blob = new Blob([doc], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `karta-ICF_${safe}.html`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  buildFunc();
+  buildAct();
+  buildEnv();
+  document.getElementById('date').valueAsDate = new Date();
+</script>
+</body>
+</html>
